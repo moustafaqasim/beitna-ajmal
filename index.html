@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>بيتنا أجمل | متابعة يومية</title>
+<style>
+:root{--bg:#f4f6f3;--card:#fff;--ink:#20312b;--muted:#718078;--green:#287a59;--line:#e3eae5;--red:#b84b4b;--gold:#b48735}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Tahoma,Arial,sans-serif;line-height:1.6}
+header{background:linear-gradient(135deg,#1f6048,#3e8a68);color:#fff;padding:25px 18px 30px}
+.wrap{max-width:1000px;margin:auto;padding:0 16px}h1{margin:0;font-size:27px}header p{margin:5px 0 0;opacity:.9}
+nav{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0}
+nav button,.btn{border:0;border-radius:10px;padding:10px 15px;background:#e7efe9;color:#28543f;font-weight:bold;cursor:pointer}
+nav button.active,.btn.primary{background:var(--green);color:#fff}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;margin:12px 0;box-shadow:0 3px 14px #20312b08}
+.row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.between{justify-content:space-between}
+h2{font-size:19px;margin:0 0 12px}h3{font-size:16px;margin:0}
+small,.muted{color:var(--muted)}.stat{flex:1;min-width:130px;background:#f5f8f5;border-radius:12px;padding:13px}
+.stat strong{font-size:25px;display:block;color:var(--green)}
+.item{border-bottom:1px solid var(--line);padding:13px 0}.item:last-child{border:0}
+.item-head{display:flex;justify-content:space-between;gap:10px;align-items:center}
+input,textarea,select{font:inherit;border:1px solid #d6e0d9;border-radius:9px;padding:9px;background:#fff;color:var(--ink);max-width:100%}
+input[type=range]{width:100%;accent-color:var(--green);padding:0}
+.score{font-weight:bold;color:var(--green);min-width:48px;text-align:center}
+.scale{display:flex;justify-content:space-between;color:var(--muted);font-size:12px}
+textarea{width:100%;min-height:76px}.hidden{display:none!important}
+canvas{width:100%;height:250px;display:block}
+.tag{font-size:12px;background:#edf4ef;color:#32664b;padding:4px 9px;border-radius:20px}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.btn.danger{background:#f8eaea;color:var(--red)}.btn.light{background:#f0f3f1;color:#43554b}
+label{display:block;font-size:13px;color:var(--muted);margin:8px 0 4px}
+.formgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+.note{background:#fff8e9;border-right:4px solid var(--gold);padding:12px;border-radius:8px;font-size:14px}
+.good{color:var(--green)}.bad{color:var(--red)}
+.insight-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-top:12px}.insight{background:#f5f8f5;border:1px solid var(--line);padding:12px;border-radius:12px}.insight strong{display:block;margin-bottom:5px}.progress{height:10px;background:#e6eee8;border-radius:20px;overflow:hidden}.progress span{display:block;height:100%;background:var(--green);border-radius:20px}
+footer{text-align:center;color:var(--muted);font-size:12px;padding:25px}
+@media(min-width:700px){.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}}
+</style>
+
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#287a59">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="بيتنا أجمل">
+<link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png">
+<link rel="apple-touch-icon" href="./icons/icon-192.png">
+</head>
+<body>
+<header><div class="wrap"><h1>بيتنا أجمل 🌿</h1><p>خطوات صغيرة كل يوم… تصنع بيتاً أكثر مودة وطمأنينة</p></div></header>
+<main class="wrap">
+<nav>
+<button class="active" data-tab="daily">التقييم اليومي</button>
+<button data-tab="weekly">الأسبوعي</button>
+<button data-tab="monthly">الشهري</button>
+<button data-tab="settings">إدارة النقاط</button>
+</nav>
+<section id="daily">
+<div class="card">
+<div class="row between"><h2>تقييم اليوم</h2><input type="date" id="day"></div>
+<div class="row" style="margin-top:12px">
+<div class="stat"><small>نتيجة اليوم</small><strong id="total">0 / 12</strong></div>
+<div class="stat"><small>نسبة الإنجاز من الحد الأعلى</small><strong id="percent">0%</strong></div>
+<div class="stat"><small>أيام مسجلة</small><strong id="daysCount">0</strong></div>
+</div>
+<div id="checkpoints"></div>
+<label for="dailyNote">ملاحظات اليوم: ما الذي سار جيداً؟ وما الذي تريد تحسينه غداً؟</label>
+<textarea id="dailyNote" placeholder="اكتب ملاحظة قصيرة لنفسك..."></textarea>
+<div class="actions"><button class="btn primary" id="save">حفظ تقييم اليوم</button><button class="btn light" id="resetDay">إعادة ضبط اليوم</button></div>
+<p class="muted" id="saveMsg" aria-live="polite"></p>
+</div>
+<div class="card"><h2>تذكير قبل دخول المنزل</h2><div class="note">إذا كان يومك مرهقاً، خذ دقائق لتصفية ذهنك في الطريق أو قبل الدخول. يمكنك أن تقول لزوجتك بهدوء: «كان يومي مضغوطاً، وأحتاج منك بعض التفهم والعذر، وسأحاول أن أترك ضغط العمل خارج البيت». لا تجعل التعب مبرراً للعصبية.</div></div>
+</section>
+<section id="weekly" class="hidden">
+<div class="card"><div class="row between"><h2>التقدم الأسبوعي</h2><input type="date" id="weekDate"></div><p class="muted">الأسبوع من السبت إلى الجمعة، مع عرض النتيجة اليومية.</p><div class="row"><div class="stat"><small>مجموع الأسبوع</small><strong id="weekTotal">0</strong></div><div class="stat"><small>متوسط اليوم المسجل</small><strong id="weekAvg">0</strong></div><div class="stat"><small>أيام التقييم</small><strong id="weekDays">0</strong></div><div class="stat"><small>تحقيق الهدف الأسبوعي</small><strong id="weekGoalStatus">—</strong></div></div><div id="weekGoalBar" class="progress" style="margin-top:12px"><span style="width:0%"></span></div><canvas id="weekChart" width="900" height="260"></canvas><div id="weekInsight" class="insight-grid"></div></div>
+</section>
+<section id="monthly" class="hidden">
+<div class="card"><div class="row between"><h2>التقدم الشهري</h2><input type="month" id="monthDate"></div><div class="row"><div class="stat"><small>مجموع الشهر</small><strong id="monthTotal">0</strong></div><div class="stat"><small>متوسط اليوم المسجل</small><strong id="monthAvg">0</strong></div><div class="stat"><small>أيام التقييم</small><strong id="monthDays">0</strong></div><div class="stat"><small>مقارنة بالشهر السابق</small><strong id="monthCompare">—</strong></div></div><canvas id="monthChart" width="900" height="260"></canvas><div id="monthInsight" class="insight-grid"></div><div class="card" style="background:#f8faf8"><h3>ملخص السلوكيات خلال الشهر</h3><div id="pointSummary"></div></div></div>
+</section>
+<section id="settings" class="hidden">
+<div class="card"><h2>تعديل معايير التقييم</h2><p class="muted">يمكنك تغيير الاسم والحد الأدنى والأعلى لكل نقطة. التغييرات تؤثر على التقييمات الجديدة، ولا تغيّر السجلات القديمة.</p><div id="settingsList"></div>
+<h3 style="margin-top:18px">هدفك الأسبوعي</h3><p class="muted">حدد متوسط النقاط اليومي الذي تطمح إليه. الهدف افتراضيًا 8 نقاط، ويمكن تغييره متى شئت.</p><div class="formgrid"><div><label>الهدف اليومي (نقاط)</label><input id="weeklyGoal" type="number" min="-10" max="50" step="0.5" value="8"></div><div style="align-self:end"><button class="btn light" id="saveGoal">حفظ الهدف</button></div></div><h3 style="margin-top:18px">إضافة نقطة جديدة</h3><div class="formgrid"><div><label>اسم السلوك</label><input id="newName" placeholder="مثلاً: قراءة قصة للأطفال"></div><div><label>أقل درجة</label><input id="newMin" type="number" value="0"></div><div><label>أعلى درجة</label><input id="newMax" type="number" value="1"></div></div><div class="actions"><button class="btn primary" id="addPoint">إضافة النقطة</button><button class="btn light" id="restore">استعادة المعايير الأصلية</button></div></div>
+<div class="card"><h2>بياناتك</h2><p class="muted">السجلات محفوظة في هذا المتصفح على هذا الجهاز. صدّر نسخة احتياطية بانتظام، خصوصاً قبل تغيير الجهاز أو المتصفح.</p><div class="actions"><button class="btn primary" id="export">تصدير نسخة احتياطية (JSON)</button><label class="btn light" style="cursor:pointer">استيراد نسخة احتياطية<input type="file" id="import" accept=".json,application/json" hidden></label><button class="btn danger" id="deleteAll">حذف جميع السجلات</button></div></div>
+</section>
+</main>
+<footer>هذا التطبيق أداة تشجيع وتأمل ذاتي، وليس حكماً على قيمتك أو على علاقتك بأسرتك.</footer>
+<script>
+const original=[
+{id:'p1',name:'عناق الزوجة وتقبيلها والتودد إليها',min:0,max:2},
+{id:'p2',name:'الثناء على زوجتي ومدحها وإظهار إعجابي بها 3 مرات على الأقل',min:0,max:3},
+{id:'p3',name:'عدم العصبية على زوجتي أو الأولاد',min:-3,max:0},
+{id:'p4',name:'التحدث مع زيد 15 دقيقة على الأقل بصبر واهتمام',min:0,max:1},
+{id:'p5',name:'اللعب مع مالك يومياً',min:0,max:1},
+{id:'p6',name:'عند الاعتراض أو التعليق: أتحدث بهدوء ودبلوماسية وإيجابية',min:0,max:1},
+{id:'p7',name:'مساعدة زوجتي أو القيام بعمل منزلي',min:0,max:3},
+{id:'p8',name:'الحفاظ على وجه مبتسم أو محايد',min:-1,max:1},
+{id:'p9',name:'الاستماع لزوجتي باهتمام دون مقاطعة أو انشغال بالجوال',min:0,max:2},
+{id:'p10',name:'وقت عائلي دون هواتف أو مشتتات',min:0,max:1},
+{id:'p11',name:'قراءة قصة أو الحديث مع الأطفال قبل النوم',min:0,max:1},
+{id:'p12',name:'شكر زوجتي على شيء قامت به خلال اليوم',min:0,max:1},
+{id:'p13',name:'المبادرة بالاعتذار عند الخطأ أو إصلاح الخلاف',min:0,max:2},
+{id:'p14',name:'عدم نقل ضغوط العمل ومشكلاته إلى المنزل',min:0,max:1},
+{id:'p15',name:'تخصيص وقت خاص للزوجة بعيداً عن مسؤوليات الأطفال',min:0,max:2}
+];
+const KEY='beitnaTracker_v1';
+let state=load();
+function load(){
+ try{
+  let saved=JSON.parse(localStorage.getItem(KEY));
+  if(!saved)return {points:JSON.parse(JSON.stringify(original)),days:{},weeklyGoal:8};
+  saved.points=saved.points||[];saved.days=saved.days||{};saved.weeklyGoal=Number.isFinite(Number(saved.weeklyGoal))?Number(saved.weeklyGoal):8;
+  // Add newly introduced suggested checkpoints to existing installations without overwriting custom settings.
+  original.forEach(p=>{if(!saved.points.some(x=>x.id===p.id))saved.points.push({...p})});
+  return saved;
+ }catch(e){return {points:JSON.parse(JSON.stringify(original)),days:{},weeklyGoal:8}}
+}
+function persist(){localStorage.setItem(KEY,JSON.stringify(state))}
+const $=id=>document.getElementById(id);
+const today=new Date().toLocaleDateString('en-CA');
+$('day').value=today;$('weekDate').value=today;$('monthDate').value=today.slice(0,7);$('weeklyGoal').value=state.weeklyGoal||8;
+function dayRecord(date){return state.days[date]||{scores:{},note:''}}
+function totalFor(rec,pts=state.points){return pts.reduce((s,p)=>s+(Number(rec.scores[p.id])||0),0)}
+function renderDaily(){
+ const d=$('day').value||today, rec=dayRecord(d); let max=state.points.reduce((s,p)=>s+p.max,0);
+ $('checkpoints').innerHTML=state.points.map(p=>{
+ let v=Number(rec.scores[p.id]??Math.max(p.min,Math.min(0,p.max)));
+ return `<div class="item"><div class="item-head"><h3>${esc(p.name)}</h3><span class="score" id="val_${p.id}">${v>0?'+':''}${v}</span></div><input type="range" min="${p.min}" max="${p.max}" step="1" value="${v}" data-point="${p.id}"><div class="scale"><span>${p.min}</span><span>اختر الدرجة</span><span>${p.max}</span></div></div>`;
+ }).join('');
+ document.querySelectorAll('[data-point]').forEach(el=>el.addEventListener('input',()=>{$('val_'+el.dataset.point).textContent=(+el.value>0?'+':'')+el.value;updateLive()}));
+ $('dailyNote').value=rec.note||'';updateLive();
+}
+function currentScores(){let scores={};document.querySelectorAll('[data-point]').forEach(e=>scores[e.dataset.point]=+e.value);return scores}
+function updateLive(){let scores=currentScores(),sum=state.points.reduce((s,p)=>s+(scores[p.id]??Math.max(p.min,Math.min(0,p.max))),0),max=state.points.reduce((s,p)=>s+p.max,0);$('total').textContent=(sum>0?'+':'')+sum+' / '+max;let minTotal=state.points.reduce((s,p)=>s+p.min,0);$('percent').textContent=max>minTotal?Math.round((sum-minTotal)/(max-minTotal)*100)+'%':'—';$('daysCount').textContent=Object.keys(state.days).length}
+function saveDay(){let d=$('day').value;if(!d)return;state.days[d]={scores:currentScores(),note:$('dailyNote').value};persist();$('saveMsg').textContent='تم حفظ تقييم '+d+' بنجاح.';updateLive();renderStats()}
+function renderSettings(){$('settingsList').innerHTML=state.points.map((p,i)=>`<div class="item"><div class="formgrid"><div><label>اسم النقطة</label><input data-edit="name" data-id="${p.id}" value="${esc(p.name)}"></div><div><label>أقل درجة</label><input type="number" data-edit="min" data-id="${p.id}" value="${p.min}"></div><div><label>أعلى درجة</label><input type="number" data-edit="max" data-id="${p.id}" value="${p.max}"></div></div><div class="actions"><button class="btn light" data-update="${p.id}">حفظ التعديل</button><button class="btn danger" data-remove="${p.id}">حذف النقطة</button></div></div>`).join('');
+ document.querySelectorAll('[data-update]').forEach(b=>b.onclick=()=>{let p=state.points.find(x=>x.id===b.dataset.update),els=[...document.querySelectorAll(`[data-id="${p.id}"]`)];let obj={};els.forEach(e=>obj[e.dataset.edit]=e.dataset.edit==='name'?e.value:Number(e.value));if(!obj.name.trim()||obj.min>obj.max){alert('تحقق من الاسم والحدود الرقمية.');return}Object.assign(p,obj);persist();renderSettings();});
+ document.querySelectorAll('[data-remove]').forEach(b=>b.onclick=()=>{if(confirm('حذف هذه النقطة؟ لن تُحذف درجاتها القديمة من السجلات.')){state.points=state.points.filter(p=>p.id!==b.dataset.remove);persist();renderSettings();}});
+}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function parseDate(s){return new Date(s+'T12:00:00')}
+function dateKey(d){return d.toLocaleDateString('en-CA')}
+function weekStart(s){let d=parseDate(s);let day=d.getDay();let diff=(day+1)%7;d.setDate(d.getDate()-diff);return d}
+function normalizedPointScore(rec,p){let v=Number(rec.scores[p.id]??Math.max(p.min,Math.min(0,p.max)));return p.max===p.min?100:((v-p.min)/(p.max-p.min))*100}
+function periodPointAverages(keys){return state.points.map(p=>{let vals=keys.filter(k=>state.days[k]).map(k=>normalizedPointScore(state.days[k],p));return {...p,avg:vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:null,count:vals.length}})}
+function keysForMonth(ym){let [y,m]=ym.split('-').map(Number),n=new Date(y,m,0).getDate();return Array.from({length:n},(_,i)=>`${ym}-${String(i+1).padStart(2,'0')}`)}
+function renderInsights(containerId,keys,previousKeys=null){let el=$(containerId);if(!el)return;let avgs=periodPointAverages(keys).filter(p=>p.avg!==null);if(!avgs.length){el.innerHTML='<div class="insight">لا توجد تقييمات كافية لهذه الفترة بعد. ابدأ بالتسجيل اليومي لتظهر لك المؤشرات.</div>';return}
+ let weakest=[...avgs].sort((a,b)=>a.avg-b.avg).slice(0,3),improved=[];
+ if(previousKeys){let prev=periodPointAverages(previousKeys);improved=avgs.map(p=>{let old=prev.find(x=>x.id===p.id);return {...p,change:old&&old.avg!==null?p.avg-old.avg:null}}).filter(p=>p.change!==null).sort((a,b)=>b.change-a.change).slice(0,3)}
+ el.innerHTML=`<div class="insight"><strong>السلوكيات التي تحتاج اهتماماً</strong>${weakest.map(p=>`<div>${esc(p.name)} <b>${Math.round(p.avg)}%</b></div>`).join('')}</div><div class="insight"><strong>أكثر السلوكيات تحسناً مقارنة بالشهر السابق</strong>${previousKeys&&improved.length?improved.map(p=>`<div>${esc(p.name)} <b class="good">${p.change>=0?'+':''}${Math.round(p.change)} نقطة مئوية</b></div>`).join(''):'تظهر المقارنة بعد توفر تقييمات في الشهر السابق والحالي.'}</div>`;
+}
+function renderStats(){
+ let ws=weekStart($('weekDate').value||today),wlabels=[],wvals=[],wkeys=[];for(let i=0;i<7;i++){let d=new Date(ws);d.setDate(ws.getDate()+i);let k=dateKey(d);wkeys.push(k);wlabels.push(['س','ح','ن','ث','ر','خ','ج'][i]);wvals.push(state.days[k]?totalFor(state.days[k]):null)}
+ let wsum=wvals.reduce((s,v)=>s+(v??0),0),wn=wvals.filter(v=>v!==null).length,wavg=wn?wsum/wn:null;$('weekTotal').textContent=wsum;$('weekAvg').textContent=wavg===null?'—':wavg.toFixed(1);$('weekDays').textContent=wn;
+ let goal=Number(state.weeklyGoal)||8,goalPct=wavg===null?0:Math.max(0,Math.min(100,wavg/goal*100));$('weekGoalStatus').textContent=wavg===null?'—':(wavg>=goal?'تم تحقيقه ✓':Math.round(goalPct)+'%');$('weekGoalBar').innerHTML=`<span style="width:${goalPct}%"></span>`;draw('weekChart',wlabels,wvals);renderInsights('weekInsight',wkeys);
+ let ym=$('monthDate').value||today.slice(0,7),mkeys=keysForMonth(ym),[y,m]=ym.split('-').map(Number),ml=mkeys.map(k=>String(Number(k.slice(-2)))),mv=mkeys.map(k=>state.days[k]?totalFor(state.days[k]):null);
+ let msum=mv.reduce((s,v)=>s+(v??0),0),mn=mv.filter(v=>v!==null).length,mavg=mn?msum/mn:null;$('monthTotal').textContent=msum;$('monthAvg').textContent=mavg===null?'—':mavg.toFixed(1);$('monthDays').textContent=mn;
+ let prevDate=new Date(y,m-2,1),prevYm=`${prevDate.getFullYear()}-${String(prevDate.getMonth()+1).padStart(2,'0')}`,prevKeys=keysForMonth(prevYm),prevVals=prevKeys.filter(k=>state.days[k]).map(k=>totalFor(state.days[k])),prevAvg=prevVals.length?prevVals.reduce((a,b)=>a+b,0)/prevVals.length:null;
+ $('monthCompare').textContent=mavg===null||prevAvg===null?'—':`${mavg-prevAvg>=0?'+':''}${(mavg-prevAvg).toFixed(1)} نقطة`;$('monthCompare').className=mavg===null||prevAvg===null?'':' '+(mavg>=prevAvg?'good':'bad');draw('monthChart',ml,mv);renderInsights('monthInsight',mkeys,prevKeys);
+ let avgs=periodPointAverages(mkeys).filter(p=>p.avg!==null).sort((a,b)=>b.avg-a.avg);$('pointSummary').innerHTML=avgs.length?avgs.map(p=>`<div class="item"><div class="item-head"><span>${esc(p.name)}</span><b>${Math.round(p.avg)}%</b></div><div class="progress"><span style="width:${p.avg}%"></span></div><small>${p.count} يوم مسجل</small></div>`).join(''):'لا توجد بيانات لهذا الشهر بعد.';
+}
+function draw(id,labels,values){let c=$(id),ctx=c.getContext('2d'),w=c.width,h=c.height;ctx.clearRect(0,0,w,h);let vals=values.filter(v=>v!==null);let minTotal=state.points.reduce((a,p)=>a+p.min,0),maxTotal=state.points.reduce((a,p)=>a+p.max,0);let min=Math.min(minTotal,...vals),max=Math.max(maxTotal,...vals);if(min===max){min-=1;max+=1}let pad={l:45,r:20,t:20,b:35},cw=w-pad.l-pad.r,ch=h-pad.t-pad.b;let y=v=>pad.t+(max-v)/(max-min)*ch;ctx.strokeStyle='#e2e9e4';ctx.lineWidth=1;for(let j=0;j<=4;j++){let v=min+(max-min)*j/4,yy=y(v);ctx.beginPath();ctx.moveTo(pad.l,yy);ctx.lineTo(w-pad.r,yy);ctx.stroke();ctx.fillStyle='#718078';ctx.font='12px Tahoma';ctx.textAlign='right';ctx.fillText(v.toFixed(0),pad.l-8,yy+4)}
+ let step=cw/labels.length;ctx.strokeStyle='#287a59';ctx.lineWidth=3;ctx.beginPath();let started=false;values.forEach((v,i)=>{if(v===null){started=false;return}let x=pad.l+step*(i+.5),yy=y(v);if(!started){ctx.moveTo(x,yy);started=true}else ctx.lineTo(x,yy)});ctx.stroke();values.forEach((v,i)=>{let x=pad.l+step*(i+.5);ctx.fillStyle=v===null?'#cbd5ce':'#287a59';if(v!==null){ctx.beginPath();ctx.arc(x,y(v),5,0,Math.PI*2);ctx.fill()}if(labels.length<=7||i%Math.ceil(labels.length/12)===0||i===labels.length-1){ctx.fillStyle='#718078';ctx.font='11px Tahoma';ctx.textAlign='center';ctx.fillText(labels[i],x,h-10)}})}
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('nav button').forEach(x=>x.classList.remove('active'));b.classList.add('active');['daily','weekly','monthly','settings'].forEach(id=>$(id).classList.toggle('hidden',id!==b.dataset.tab));if(b.dataset.tab==='weekly'||b.dataset.tab==='monthly')renderStats();if(b.dataset.tab==='settings')renderSettings()});
+$('day').onchange=()=>{ $('saveMsg').textContent='';renderDaily()};$('save').onclick=saveDay;$('resetDay').onclick=()=>{if(confirm('إعادة درجات اليوم إلى الدرجة المحايدة (صفر)؟')){state.days[$('day').value]={scores:{},note:''};persist();renderDaily();renderStats()}};
+$('weekDate').onchange=renderStats;$('monthDate').onchange=renderStats;
+$('addPoint').onclick=()=>{let name=$('newName').value.trim(),min=Number($('newMin').value),max=Number($('newMax').value);if(!name||!Number.isFinite(min)||!Number.isFinite(max)||min>max){alert('أدخل اسماً صحيحاً وحدود درجات صحيحة.');return}state.points.push({id:'p'+Date.now(),name,min,max});persist();$('newName').value='';renderSettings()};
+$('restore').onclick=()=>{if(confirm('استعادة قائمة النقاط المقترحة كاملة؟ ستُستبدل قائمة النقاط الحالية.')){state.points=JSON.parse(JSON.stringify(original));persist();renderSettings();renderDaily();renderStats()}};
+$('saveGoal').onclick=()=>{let v=Number($('weeklyGoal').value);if(!Number.isFinite(v)){alert('أدخل هدفاً رقمياً صحيحاً.');return}state.weeklyGoal=v;persist();renderStats();alert('تم حفظ الهدف الأسبوعي.')} ;
+$('export').onclick=()=>{let blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='beitna-backup.json';a.click();URL.revokeObjectURL(a.href)};
+$('import').onchange=e=>{let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{let x=JSON.parse(r.result);if(!Array.isArray(x.points)||!x.days)throw 0;state=x;persist();renderDaily();renderStats();renderSettings();alert('تم استيراد النسخة الاحتياطية.')}catch(_){alert('الملف غير صالح.')}};r.readAsText(f)};
+$('deleteAll').onclick=()=>{if(confirm('هل أنت متأكد من حذف كل السجلات اليومية نهائياً؟')){state.days={};persist();renderDaily();renderStats()}};
+renderDaily();renderStats();
+</script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./service-worker.js').catch(err => console.error('Service Worker:', err));
+  });
+}
+</script>
+</body></html>
